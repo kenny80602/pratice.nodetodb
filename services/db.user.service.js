@@ -1,4 +1,7 @@
 import MongoDB from '../model/db.js';
+import crypto from 'crypto';
+
+
 // let a = [1,2,3]
 // let [b, c, e] = a;
 // console.log(b);
@@ -58,8 +61,9 @@ export const deleteUser = async (id) => {
 
 export const register = async (userInfo) => {
     try {
-
-        let exist = await MongoDB.collection('user').findOne({ username: userInfo.username })
+       let newPassword = crypto.createHmac('sha256',userInfo.password).update('aaa').digest('hex')
+        userInfo.password=newPassword;
+        let exist = await MongoDB.collection('user').findOne({ username: userInfo.username });
         if (exist) {
             throw new Error('This user name is exists.')
         }
@@ -73,7 +77,9 @@ export const register = async (userInfo) => {
 
 export const login = async (userInfo) => {
     try {
-        let exist = await MongoDB.collection('user').findOne({ username: userInfo.username, password: userInfo.password })
+        let newPassword = crypto.createHmac('sha256',userInfo.password).update('aaa').digest('hex')
+
+        let exist = await MongoDB.collection('user').findOne({ username: userInfo.username, password: newPassword})
         if (exist) {
             return '登入成功';
         } else {
