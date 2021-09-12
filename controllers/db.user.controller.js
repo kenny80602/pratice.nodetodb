@@ -87,10 +87,15 @@ export const userLogin = async(req, res, next) =>{
     try {
         let postData ={
             username: req.body.username,
-            password: req.body.passport
+            password: req.body.password
         };
+        output.result = await UserService.login(postData)
+        res.status(200).json(output)
     } catch (e) {
         console.log(e.message);
+        output.status = 500;
+        output.errMsgs = e.message;
+        res.status(500).json(output);
     }
 
 }

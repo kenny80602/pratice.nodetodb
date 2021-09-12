@@ -14,7 +14,7 @@ export const getUserInfoList = async (userId) => {
 
 export const getUserInfo = async (userId) => {
     try {
-        const [user] = await MongoDB.collection('user').find({_id: userId}).toArray();
+        const [user] = await MongoDB.collection('user').find({ _id: userId }).toArray();
         return user;
     } catch (e) {
         throw new Error(e.message)
@@ -58,13 +58,27 @@ export const deleteUser = async (id) => {
 
 export const register = async (userInfo) => {
     try {
-        
-        let exist = await MongoDB.collection('user').findOne({username: userInfo.username})
-        if(exist) {
+
+        let exist = await MongoDB.collection('user').findOne({ username: userInfo.username })
+        if (exist) {
             throw new Error('This user name is exists.')
         }
         const result = await MongoDB.collection('user').insertOne(userInfo)
-        if(!result.acknowledged)  throw new Error('register failed.')
+        if (!result.acknowledged) throw new Error('register failed.')
+        return null;
+    } catch (e) {
+        throw new Error(e.message)
+    }
+}
+
+export const login = async (userInfo) => {
+    try {
+        let exist = await MongoDB.collection('user').findOne({ username: userInfo.username, password: userInfo.password })
+        if (exist) {
+            return '登入成功';
+        } else {
+            throw new Error('帳號或密碼錯誤');
+        }
         return null;
     } catch (e) {
         throw new Error(e.message)
